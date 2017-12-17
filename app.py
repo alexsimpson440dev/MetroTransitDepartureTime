@@ -1,4 +1,5 @@
 from src.metrotransit_api import MetroTransitAPI
+from datetime import datetime
 API = MetroTransitAPI()
 
 # gets users input to input into the MetroTransitAPI class
