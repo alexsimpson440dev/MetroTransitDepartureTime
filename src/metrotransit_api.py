@@ -10,6 +10,21 @@ class MetroTransitAPI(object):
     def __init__(self):
         pass
 
+    # get routes function sets a dictionary
+    # then reads/parses the routes json file, gets route number and description, then returns them in a dictionary
+    def get_routes(self):
+        routes_dict = dict()
+
+        routes_url = DEFAULT_URL + "Routes" + JSON_FORMAT
+        read_url = self.read_provided_url(routes_url)
+        parsed_url = self.parse_provided_url(read_url)
+        for routes in parsed_url:
+            route_number = routes['Route']
+            route_name = routes['Description']
+
+            routes_dict[route_number] = route_name
+        return routes_dict
+
     # defines the get_route_number
     # this returns all route numbers where a users entered in route is in the API's route url
     def get_route_number(self, route):
