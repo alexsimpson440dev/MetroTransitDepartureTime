@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, flash
+from flask import Flask, request, redirect, render_template, flash, url_for
 from src.metrotransit_api import MetroTransitAPI
 import os
 
@@ -42,7 +42,7 @@ def direction():
                                bus_stops=None, time=None, desired_item=desired_item, title=title)
     except TypeError:
         flash('Please Select a Route!')
-        return redirect('index.html')
+        return redirect(url_for('home'))
 
 # stop route gets route number and direction number from url
 # inputs those values into API
@@ -58,10 +58,10 @@ def stop():
 
         bus_stops = API.get_stop_identifier(direction_number, route_number)
         return render_template('index.html', routes=None, directions=None, bus_stops=bus_stops,
-        route_number=route_number, direction_number=direction_number, time=None, desired_item=desired_item, title=title)
+            route_number=route_number, direction_number=direction_number, time=None, desired_item=desired_item, title=title)
     except TypeError:
         flash('Please Select a Direction!')
-        return redirect("index.html")
+        return redirect(url_for('home'))
 
 # time route gets route number, direction number, and stop number from url
 # the API then inputs those numbers in and returns the time until that bus will departure from information given
@@ -78,15 +78,15 @@ def time():
         time = API.get_next_departure(route_number, direction_number, stop_number)
         if stop_number is None:
             flash('Please Select a Bus Stop!')
-            return redirect("index.html")
+            return redirect(url_for('home'))
         elif time is None:
             flash('Sorry, no more Buses are leaving this location!')
-            return redirect("index.html")
+            return redirect(url_for('home'))
         else:
             return render_template('index.html', routes=None, directions=None, bus_stops=None,
                                    time=time, desired_item=desired_item, title=title)
     except TypeError:
-        return redirect("index.html")
+        return redirect(url_for('home'))
 
 # runs the server locally
 if __name__ == "__main__":
