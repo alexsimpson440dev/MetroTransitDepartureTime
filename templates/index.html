@@ -7,14 +7,48 @@
 <body>
     <div>
         <div>
-            <form method="get">
-                <select name="routes" size="4">
+            {% if routes != None %}
+            <form action="/direction" method="get">
+                <select name="route" size="4">
                     {% for num, route in routes.items() %}
                         <option value="{{ num }}">{{ route }}</option>
                     {% endfor %}
                 </select>
-                <input type="submit" value="Submit">
+                <input type="submit" value="Next">
             </form>
+            {% endif %}
+
+            <br>
+
+            {% if directions != None %}
+            <form action="/stop" method="get">
+                <select name="direction" size="2">
+                    {% for value, direction in directions.items() %}
+                        <option value="{{ value }}">{{ direction }}</option>
+                    {% endfor %}
+                </select>
+                <input type="hidden" name="route" value="{{route_number}}">
+                <input type="submit" value="Next">
+            </form>
+            {% endif %}
+
+            {% if bus_stops != None %}
+            <form action="/time" method="get">
+                <select name="stop" size="2">
+                    {% for value, bus_stop in bus_stops.items() %}
+                        <option value="{{ value }}">{{ bus_stop }}</option>
+                    {% endfor %}
+                </select>
+                <input type="hidden" name="route" value="{{route_number}}">
+                <input type="hidden" name="direction" value="{{direction_number}}">
+                <input type="submit" value="Next">
+            </form>
+            {% endif %}
+
+            {% if time != None %}
+                <h1>{{ time }}</h1>
+                <a href="index.html">Home</a>
+            {% endif %}
         </div>
     </div>
 </body>

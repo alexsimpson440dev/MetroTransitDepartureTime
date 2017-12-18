@@ -25,9 +25,23 @@ class MetroTransitAPI(object):
             routes_dict[route_number] = route_name
         return routes_dict
 
+    # get directions functions gets the two directions that will work with a provided route
+    def get_directions(self, route_number):
+        direction_dict = dict()
+
+        direction_url = DEFAULT_URL + "Directions/" + route_number + JSON_FORMAT
+        read_url = self.read_provided_url(direction_url)
+        parsed_url = self.parse_provided_url(read_url)
+        for directions in parsed_url:
+            value = directions['Value']
+            direction = directions['Text']
+
+            direction_dict[value] = direction
+        return direction_dict
+
     # defines the get_route_number
     # this returns all route numbers where a users entered in route is in the API's route url
-    def get_route_number(self, route):
+    '''def get_route_number(self, route):
         routes_url = DEFAULT_URL + "Routes" + JSON_FORMAT
         read_url = self.read_provided_url(routes_url)
         parse_read_url = self.parse_provided_url(read_url)
@@ -35,17 +49,22 @@ class MetroTransitAPI(object):
             if route in items['Description'].lower():
                 return items['Route']
             else:
-                pass
+                pass'''
 
     # defines the get_stop_identifier which intakes a bus stop name, direction number, and route number
     # the function then returns the bus stop number if applicable
-    def get_stop_identifier(self, bus_stop, direction, route_number):
-        stops_url = DEFAULT_URL + "Stops/" + str(route_number) + "/" + str(direction) + JSON_FORMAT
+    def get_stop_identifier(self, direction, route_number):
+        stops_dict = dict()
+
+        stops_url = DEFAULT_URL + "Stops/" + route_number + "/" + direction + JSON_FORMAT
         read_url = self.read_provided_url(stops_url)
         parsed_url = self.parse_provided_url(read_url)
         for stops in parsed_url:
-            if bus_stop in stops['Text'].lower():
-                return stops['Value']
+            value = stops['Value']
+            text = stops['Text']
+
+            stops_dict[value] = text
+        return stops_dict
 
     # defines_get_departure which takes in a route number, direction, and stop id
     # the function then loops through a json for the first 'DepartureText'
