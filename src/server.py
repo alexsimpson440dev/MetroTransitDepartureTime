@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, flash
 from src.metrotransit_api import MetroTransitAPI
 import os
 
@@ -9,38 +9,84 @@ API = MetroTransitAPI()
 app = Flask(__name__, '/static', static_folder='../static', template_folder='../templates')
 app.secret_key = os.urandom(24)
 
+# all routes are checking to see if the user is adding the correct items
+# if they do not, then they are going to be redirected back to the main home page
+
+# all routes provide a new title and desired items to be displayed on the page
+
 # gets index.html
 # if the get function is run, the home function gets routes from the API and displays it in a web page
 @app.route('/')
 @app.route('/index.html')
 def home():
+    title = "Home"
+    desired_item = "Please Select Your Desired Route"
+
     routes = API.get_routes()
-    return render_template('index.html', routes=routes, directions=None, bus_stops=None, time=None)
+    return render_template('index.html', routes=routes, directions=None, bus_stops=None, time=None,
+                           desired_item=desired_item, title=title)
 
-@app.route('/direction', methods=['get', 'post'])
+# direction route gets /direction
+# gets the route number from url and inputs it into API
+# returns the directions in a dictionary along with their value
+@app.route('/direction', methods=['get'])
 def direction():
-    route_number = request.args.get('route')
-    directions = API.get_directions(route_number)
+    try:
+        title = "Direction"
+        desired_item = "Please Select Your Desired Direction"
 
-    return render_template('index.html', routes=None, directions=directions, route_number=route_number, bus_stops=None, time=None)
+        route_number = request.args.get('route')
+        directions = API.get_directions(route_number)
 
-@app.route('/stop', methods=['get', 'post'])
+        return render_template('index.html', routes=None, directions=directions, route_number=route_number,
+                               bus_stops=None, time=None, desired_item=desired_item, title=title)
+    except TypeError:
+        flash('Please Select a Route!')
+        return redirect('index.html')
+
+# stop route gets route number and direction number from url
+# inputs those values into API
+# API then returns the bus stops and their bus stop identifier
+@app.route('/stop', methods=['get'])
 def stop():
-    route_number = request.args.get('route')
-    direction_number = request.args.get('direction')
+    try:
+        title = "Bus Stop"
+        desired_item = "Please Select Your Desired Bus Stop"
 
-    bus_stops = API.get_stop_identifier(direction_number, route_number)
-    return render_template('index.html', routes=None, directions=None, bus_stops=bus_stops,
-    route_number=route_number, direction_number=direction_number, time=None)
+        route_number = request.args.get('route')
+        direction_number = request.args.get('direction')
 
-@app.route('/time', methods=['get', 'post'])
+        bus_stops = API.get_stop_identifier(direction_number, route_number)
+        return render_template('index.html', routes=None, directions=None, bus_stops=bus_stops,
+        route_number=route_number, direction_number=direction_number, time=None, desired_item=desired_item, title=title)
+    except TypeError:
+        flash('Please Select a Direction!')
+        return redirect("index.html")
+
+# time route gets route number, direction number, and stop number from url
+# the API then inputs those numbers in and returns the time until that bus will departure from information given
+@app.route('/time', methods=['get'])
 def time():
-    route_number = request.args.get('route')
-    direction_number = request.args.get('direction')
-    stop_number = request.args.get('stop')
+    try:
+        title = "Departure Time"
+        desired_item = "Your Next Bus Will Depart In:"
 
-    time = API.get_next_departure(route_number, direction_number, stop_number)
-    return render_template('index.html', routes=None, directions=None, bus_stops=None, time=time)
+        route_number = request.args.get('route')
+        direction_number = request.args.get('direction')
+        stop_number = request.args.get('stop')
+
+        time = API.get_next_departure(route_number, direction_number, stop_number)
+        if stop_number is None:
+            flash('Please Select a Bus Stop!')
+            return redirect("index.html")
+        elif time is None:
+            flash('Sorry, no more Buses are leaving this location!')
+            return redirect("index.html")
+        else:
+            return render_template('index.html', routes=None, directions=None, bus_stops=None,
+                                   time=time, desired_item=desired_item, title=title)
+    except TypeError:
+        return redirect("index.html")
 
 # runs the server locally
 if __name__ == "__main__":

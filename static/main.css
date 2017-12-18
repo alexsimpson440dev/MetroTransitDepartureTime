@@ -1,0 +1,23 @@
+body {
+    background-color: #12509d;
+}
+
+.main {
+    width: auto;
+    height: auto;
+    margin: auto;
+    text-align: center;
+    color: #ffd500;
+}
+
+a:link {
+    color: #ffd500;
+}
+
+a:visited {
+    color: #f4264c;
+}
+
+a:hover {
+    color: #ffd500;
+}

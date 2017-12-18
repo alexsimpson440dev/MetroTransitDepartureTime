@@ -39,17 +39,6 @@ class MetroTransitAPI(object):
             direction_dict[value] = direction
         return direction_dict
 
-    # defines the get_route_number
-    # this returns all route numbers where a users entered in route is in the API's route url
-    '''def get_route_number(self, route):
-        routes_url = DEFAULT_URL + "Routes" + JSON_FORMAT
-        read_url = self.read_provided_url(routes_url)
-        parse_read_url = self.parse_provided_url(read_url)
-        for items in parse_read_url:
-            if route in items['Description'].lower():
-                return items['Route']
-            else:
-                pass'''
 
     # defines the get_stop_identifier which intakes a bus stop name, direction number, and route number
     # the function then returns the bus stop number if applicable
@@ -84,6 +73,7 @@ class MetroTransitAPI(object):
                     return departure_time
                 else:
                     return departure_time + "utes"
+
         # if the checks returned value is not true, then it returns bool false
         # program will subtract current time from it to return correct value in minutes until departure
         else:
@@ -91,9 +81,11 @@ class MetroTransitAPI(object):
                 returned_time = times['DepartureText']
                 parsed_time = datetime.strptime(returned_time, '%I:%M')
                 current_time = datetime.now()
+
                 departure_time = parsed_time - current_time
-                departure_time = ((((departure_time.days - departure_time.days) + departure_time.seconds)-12*3600)/60) + 1
-                return str(int(departure_time)) + " Minutes"
+                departure_time = str(departure_time)
+                days_hours,minutes,second = departure_time.split(':')
+                return minutes + " Minutes"
 
     # defines a check function for the next departure
     # checks to see if the actual time is true
