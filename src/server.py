@@ -7,7 +7,7 @@ API = MetroTransitAPI()
 
 # sets app to flask items and sets secret key
 app = Flask(__name__, '/static', static_folder='../static', template_folder='../templates')
-app.secret_key = os.urandom(24)
+app.secret_key = os.environ['SECRET']
 
 # all routes are checking to see if the user is adding the correct items
 # if they do not, then they are going to be redirected back to the main home page
